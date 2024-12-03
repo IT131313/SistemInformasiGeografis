@@ -2,12 +2,12 @@
 const map = L.map('map').setView([-5.4295, 105.2610], 13); // Lokasi Bandar Lampung
 
 // Tambahkan peta dasar dari Mapbox
-L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoiYmFuZ2t1bWlzIiwiYSI6ImNtNDhodzlydTBqaDYyanNkbmF1aHJwanMifQ.eVL3JqVj0TvAD1A2TBoNyg', {
+L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=AccessToken', {
     maxZoom: 18,
     id: 'mapbox/streets-v11',
     tileSize: 512,
     zoomOffset: -1,
-    accessToken: 'pk.eyJ1IjoiYmFuZ2t1bWlzIiwiYSI6ImNtNDhodzlydTBqaDYyanNkbmF1aHJwanMifQ.eVL3JqVj0TvAD1A2TBoNyg' // Ganti dengan token Mapbox Anda
+    accessToken: 'AccessToken' // Ganti dengan token Mapbox Anda
 }).addTo(map);
 
 // Tambahkan batas wilayah (contoh GeoJSON)
