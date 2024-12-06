@@ -32,7 +32,7 @@ def get_geojson_data():
                 )
             )
         )
-        FROM "pariwisata lampung";
+        FROM "pariwisata_lampung";
     """)
 
     geojson_data = cursor.fetchone()[0]  # Ambil hasil query

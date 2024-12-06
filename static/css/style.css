@@ -2,6 +2,9 @@ body {
   margin: 0;
   padding: 0;
   font-family: Arial, sans-serif;
+  display: flex;
+  height: 100vh;
+  width: 100vw;
 }
 
 .container {
@@ -66,17 +69,18 @@ body {
   background-color: blue;
 }
 
-#map {
-  flex-grow: 1;
-  height: 100%;
+#sidebar {
+  width: 300px; /* Adjust sidebar width */
+  height: 100%; /* Full height */
+  overflow-y: auto; /* Add scroll if content exceeds */
+  background: #f4f4f4; /* Light gray background */
+  padding: 15px;
+  box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
 }
 
-#sidebar {
-  width: 300px;
-  padding: 10px;
-  background-color: #f4f4f4;
-  height: 100vh;
-  overflow-y: auto;
+#map {
+  flex: 1; /* Take up remaining space next to sidebar */
+  height: 100%;
 }
 
 .sidebar-item {
@@ -94,4 +98,141 @@ body {
 h1 {
   text-align: center;
   margin-top: 20px;
+}
+
+/* Custom Popup Container */
+.custom-popup {
+  font-family: "Arial", sans-serif;
+  width: 300px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  background-color: #fff;
+  padding: 10px;
+}
+
+/* Popup Image */
+.popup-image {
+  width: 100%;
+  height: auto;
+  border-bottom: 2px solid #eee;
+}
+
+/* Popup Content */
+.popup-content h2 {
+  font-size: 18px;
+  margin: 10px 0 5px;
+  color: #000;
+}
+
+.popup-content .location {
+  font-size: 14px;
+  color: #777;
+}
+
+.popup-content .type {
+  font-size: 14px;
+  font-weight: bold;
+  color: #007bff;
+  margin-bottom: 10px;
+}
+
+/* Description Box */
+.description {
+  border: 1px solid #28a745;
+  border-radius: 5px;
+  padding: 10px;
+  margin: 10px 0;
+  background-color: #f9f9f9;
+  font-size: 13px;
+  color: #333;
+  line-height: 1.5;
+}
+
+/* Route Button */
+.route-button {
+  display: inline-block;
+  width: 100%;
+  padding: 10px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.route-button:hover {
+  background-color: #218838;
+}
+
+/* Popup Container */
+.popup-container {
+  font-family: "Arial", sans-serif;
+  padding: 10px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  max-width: 200px;
+}
+
+/* Image inside Popup */
+.popup-image {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+/* Description */
+.popup-description {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+/* Route Button */
+.route-button {
+  padding: 8px 15px;
+  background-color: #28a745;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  width: 100%;
+  text-align: center;
+}
+
+.route-button:hover {
+  background-color: #218838;
+}
+
+/* Style for the Close Route button */
+.close-routing-button {
+  background-color: #d9534f; /* Red color for emphasis */
+  color: white; /* Text color */
+  border: none; /* Remove the border */
+  border-radius: 5px; /* Rounded corners */
+  padding: 10px 15px; /* Padding for size */
+  font-size: 14px; /* Adjust text size */
+  cursor: pointer; /* Pointer cursor on hover */
+  transition: background-color 0.3s, transform 0.2s; /* Smooth transition on hover */
+  margin-top: 10px; /* Add some space between the button and other content */
+  width: 100%; /* Make the button take the full width */
+  text-align: center; /* Center text in the button */
+}
+
+/* Change background color on hover */
+.close-routing-button:hover {
+  background-color: #c9302c; /* Darker red on hover */
+  transform: scale(1.05); /* Slightly increase size on hover */
+}
+
+/* Optional: Focus styles for accessibility */
+.close-routing-button:focus {
+  outline: none; /* Remove default outline */
+  box-shadow: 0 0 5px 2px rgba(217, 53, 58, 0.6); /* Add a subtle glow */
 }
