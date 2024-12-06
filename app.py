@@ -1,6 +1,7 @@
 from flask import Flask, render_template, jsonify
 import psycopg2
 import geojson
+from config import DATABASE_CONFIG  # Impor konfigurasi database dari config.py
 
 app = Flask(__name__)
 
@@ -10,14 +11,8 @@ def index():
 
 @app.route('/get_geojson_data')
 def get_geojson_data():
-    # Koneksi ke database PostgreSQL (pastikan Anda mengganti dengan kredensial yang benar)
-    conn = psycopg2.connect(
-        dbname="nama_database", 
-        user="nama_user", 
-        password="pw_user_database", 
-        host="localhost", 
-        port="5432"
-    )
+    # Koneksi ke database PostgreSQL menggunakan konfigurasi dari config.py
+    conn = psycopg2.connect(**DATABASE_CONFIG)
     cursor = conn.cursor()
 
     # Query untuk mengambil data geospasial dalam format GeoJSON

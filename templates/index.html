@@ -10,47 +10,9 @@
     
     <!-- Link ke stylesheet Mapbox -->
     <link href="https://api.mapbox.com/mapbox-gl-js/v2.9.0/mapbox-gl.css" rel="stylesheet" />
-    
-    <!-- Link ke CSS tambahan untuk tata letak -->
-    <style>
-        body {
-            display: flex;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-        }
 
-        #sidebar {
-            width: 300px;
-            padding: 10px;
-            background-color: #f4f4f4;
-            height: 100vh;
-            overflow-y: auto;
-        }
-
-        #map {
-            height: 100vh;
-            width: calc(100% - 300px);
-        }
-
-        .sidebar-item {
-            padding: 10px;
-            margin-bottom: 10px;
-            background-color: #fff;
-            border: 1px solid #ccc;
-            cursor: pointer;
-        }
-
-        .sidebar-item:hover {
-            background-color: #f0f0f0;
-        }
-        
-        h1 {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-    </style>
+    <!-- Link ke CSS -->
+    <link rel="stylesheet" href="/static/css/style.css" /> 
 </head>
 <body>
 
@@ -65,52 +27,6 @@
 
     <!-- Link ke JavaScript Leaflet -->
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <!-- Script untuk fetch data GeoJSON -->
-    <script>
-        // Inisialisasi peta
-        const map = L.map('map').setView([-5.4295, 105.2610], 13); // Lokasi Bandar Lampung
-
-        // Tambahkan peta dasar dari Mapbox
-        L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=Token', {
-            maxZoom: 18,
-            id: 'mapbox/streets-v11',
-            tileSize: 512,
-            zoomOffset: -1,
-            accessToken: 'Token' // Ganti dengan token Mapbox Anda
-        }).addTo(map);
-
-        // Ambil data GeoJSON dari Flask (gunakan route yang mengembalikan data GeoJSON)
-        fetch('/get_geojson_data')
-            .then(response => response.json())
-            .then(data => {
-                // Tambahkan data GeoJSON ke peta
-                const geojsonLayer = L.geoJSON(data, {
-                    onEachFeature: function (feature, layer) {
-                        // Menambahkan popup untuk setiap objek
-                        layer.bindPopup(`
-                            <b>${feature.properties.nama_objek}</b><br>
-                            Jenis: ${feature.properties.jenis_obje}<br>
-                            Alamat: ${feature.properties.alamat}<br>
-                            Deskripsi: ${feature.properties.deskripsi}
-                        `);
-
-                        // Tambahkan marker untuk setiap objek di sidebar
-                        const item = document.createElement('div');
-                        item.classList.add('sidebar-item');
-                        item.innerHTML = feature.properties.jenis_obje;
-                        item.addEventListener('click', () => {
-                            // Ketika sidebar item diklik, fokuskan peta ke objek terkait
-                            map.setView(layer.getLatLng(), 15);
-                            layer.openPopup();
-                        });
-
-                        // Tambahkan item ke sidebar
-                        document.getElementById('object-list').appendChild(item);
-                    }
-                }).addTo(map);
-            })
-            .catch(error => console.error('Error fetching GeoJSON data:', error));
-    </script>
-
+    <script src="{{ url_for('static', filename='js/map.js') }}"></script>
 </body>
 </html>

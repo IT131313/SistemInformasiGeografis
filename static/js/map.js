@@ -10,15 +10,34 @@ L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_toke
     accessToken: 'Token' // Ganti dengan token Mapbox Anda
 }).addTo(map);
 
-// Fetch data GeoJSON dari server Flask
-fetch('/data')
+// Ambil data GeoJSON dari Flask (gunakan route yang mengembalikan data GeoJSON)
+fetch('/get_geojson_data')
     .then(response => response.json())
     .then(data => {
-        // Tambahkan layer GeoJSON ke peta
-        L.geoJSON(data, {
+        // Tambahkan data GeoJSON ke peta
+        const geojsonLayer = L.geoJSON(data, {
             onEachFeature: function (feature, layer) {
-                layer.bindPopup(`<b>Nama Objek:</b> ${feature.properties.nama_objek}<br><b>Jenis Objek:</b> ${feature.properties.jenis_obje}`);
+                // Menambahkan popup untuk setiap objek
+                layer.bindPopup(`
+                    <b>${feature.properties.nama_objek}</b><br>
+                    Jenis: ${feature.properties.jenis_obje}<br>
+                    Alamat: ${feature.properties.alamat}<br>
+                    Deskripsi: ${feature.properties.deskripsi}
+                `);
+
+                // Tambahkan marker untuk setiap objek di sidebar
+                const item = document.createElement('div');
+                item.classList.add('sidebar-item');
+                item.innerHTML = feature.properties.jenis_obje;
+                item.addEventListener('click', () => {
+                    // Ketika sidebar item diklik, fokuskan peta ke objek terkait
+                    map.setView(layer.getLatLng(), 15);
+                    layer.openPopup();
+                });
+
+                // Tambahkan item ke sidebar
+                document.getElementById('object-list').appendChild(item);
             }
         }).addTo(map);
     })
-    .catch(error => console.error('Error loading GeoJSON:', error));
+    .catch(error => console.error('Error fetching GeoJSON data:', error));
