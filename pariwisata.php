@@ -7,7 +7,7 @@
     <title>Document</title>
 </head>
 <body>
-    <h2>Paariwisata</h2>
+    <h2>Pariwisata</h2>
     
     <?php
     $connection = pg_connect("host=localhost dbname=Pariwisata user=postgres password=alfath2602");
