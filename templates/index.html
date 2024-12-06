@@ -1,42 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GIS Website</title>
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Web GIS Lampung</title>
+    
+    <!-- Link ke stylesheet Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    
+    <!-- Link ke stylesheet Mapbox -->
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.9.0/mapbox-gl.css" rel="stylesheet" />
+    
+    <style>
+        #map {
+            height: 600px;
+            width: 100%;
+        }
+    </style>
 </head>
-
 <body>
-    <div class="container">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="search-box">
-                <input type="text" placeholder="Search for anything..." />
-            </div>
-            <div class="categories">
-                <h3>KATEGORI</h3>
-                <ul>
-                    <li><span class="dot green"></span>Museum</li>
-                    <li><span class="dot orange"></span>Pantai</li>
-                    <li><span class="dot red"></span>Pura</li>
-                    <li><span class="dot blue"></span>Danau</li>
-                </ul>
-            </div>
-        </div>
-        <!-- Map -->
-        <div id="map"></div>
-    </div>
+    <h1>Web GIS Pariwisata Lampung</h1>
+    <div id="map"></div>
 
-    <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <!-- Custom JS -->
-    <script src="{{ url_for('static', filename='js/map.js') }}"></script>
+    <!-- Load Leaflet.js -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
+    <!-- Mapbox JS -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.9.0/mapbox-gl.js"></script>
+
+    <script>
+        // Inisialisasi peta
+        const map = L.map('map').setView([-5.4295, 105.2610], 13); // Lokasi Bandar Lampung
+
+        // Tambahkan peta dasar dari Mapbox
+        L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=Token', {
+            maxZoom: 18,
+            id: 'mapbox/streets-v11',
+            tileSize: 512,
+            zoomOffset: -1,
+            accessToken: 'Token' // Ganti dengan token Mapbox Anda
+        }).addTo(map);
+
+        // Ambil data GeoJSON dari backend Flask
+        fetch('/get_geojson')
+            .then(response => response.json())
+            .then(data => {
+                // Menambahkan objek GeoJSON ke peta
+                const geojsonLayer = L.geoJSON(data, {
+                    onEachFeature: function (feature, layer) {
+                        // Menambahkan marker untuk setiap objek
+                        layer.bindPopup(`<h3>${feature.properties.nama_objek}</h3>
+                                         <p>${feature.properties.jenis_obje}</p>
+                                         <p>${feature.properties.alamat}</p>
+                                         <p>${feature.properties.deskripsi}</p>`);
+                    },
+                    pointToLayer: function (feature, latlng) {
+                        return L.marker(latlng); // Menambahkan marker pada titik lokasi
+                    }
+                }).addTo(map);
+            })
+            .catch(error => console.error('Error fetching GeoJSON data:', error));
+    </script>
 </body>
-
 </html>
