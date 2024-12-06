@@ -4,59 +4,46 @@ import geojson
 
 app = Flask(__name__)
 
-# Koneksi ke database PostgreSQL
-def get_db_connection():
-    conn = psycopg2.connect(
-        dbname="sig", 
-        user="postgres", 
-        password="Roman5432", 
-        host="localhost", 
-        port="5432"
-    )
-    return conn
-
 @app.route('/')
 def index():
     return render_template('index.html')
 
-@app.route('/get_geojson')
-def get_geojson():
-    conn = get_db_connection()
+@app.route('/get_geojson_data')
+def get_geojson_data():
+    # Koneksi ke database PostgreSQL (pastikan Anda mengganti dengan kredensial yang benar)
+    conn = psycopg2.connect(
+        dbname="nama_database", 
+        user="nama_user", 
+        password="pw_user_database", 
+        host="localhost", 
+        port="5432"
+    )
     cursor = conn.cursor()
 
-    # Ambil data objek wisata dalam format GeoJSON
+    # Query untuk mengambil data geospasial dalam format GeoJSON
     cursor.execute("""
-        SELECT gid, nama_objek, jenis_obje, alamat, deskripsi, ST_AsGeoJSON(geom) AS geojson
+        SELECT jsonb_build_object(
+            'type', 'FeatureCollection',
+            'features', jsonb_agg(
+                jsonb_build_object(
+                    'type', 'Feature',
+                    'geometry', ST_AsGeoJSON(geom)::jsonb,
+                    'properties', jsonb_build_object(
+                        'nama_objek', nama_objek,
+                        'jenis_obje', jenis_obje,
+                        'alamat', alamat,
+                        'deskripsi', deskripsi
+                    )
+                )
+            )
+        )
         FROM "pariwisata lampung";
     """)
-    
-    rows = cursor.fetchall()
-    
-    # Membentuk GeoJSON
-    features = []
-    for row in rows:
-        gid, nama_objek, jenis_obje, alamat, deskripsi, geojson_str = row
-        feature = {
-            "type": "Feature",
-            "properties": {
-                "gid": gid,
-                "nama_objek": nama_objek,
-                "jenis_obje": jenis_obje,
-                "alamat": alamat,
-                "deskripsi": deskripsi
-            },
-            "geometry": geojson.loads(geojson_str)
-        }
-        features.append(feature)
-    
-    geojson_data = {
-        "type": "FeatureCollection",
-        "features": features
-    }
 
+    geojson_data = cursor.fetchone()[0]  # Ambil hasil query
     cursor.close()
     conn.close()
-    
+
     return jsonify(geojson_data)
 
 if __name__ == '__main__':
