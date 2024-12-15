@@ -1,22 +1,19 @@
 from flask import Flask, render_template, jsonify
 import psycopg2
-import geojson
-from config import DATABASE_CONFIG  # Impor konfigurasi database dari config.py
+from config import DATABASE_CONFIG
 
 app = Flask(__name__)
 
-@app.route('/')
-def index():
-    return render_template('index.html')
+def get_db_connection():
+    """Create and return a database connection"""
+    return psycopg2.connect(**DATABASE_CONFIG)
 
-@app.route('/get_geojson_data')
-def get_geojson_data():
-    # Koneksi ke database PostgreSQL menggunakan konfigurasi dari config.py
-    conn = psycopg2.connect(**DATABASE_CONFIG)
+def fetch_geojson_from_db():
+    """Fetch GeoJSON data from database"""
+    conn = get_db_connection()
     cursor = conn.cursor()
-
-    # Query untuk mengambil data geospasial dalam format GeoJSON
-    cursor.execute("""
+    
+    query = """
         SELECT jsonb_build_object(
             'type', 'FeatureCollection',
             'features', jsonb_agg(
@@ -32,14 +29,28 @@ def get_geojson_data():
                 )
             )
         )
-        FROM "pariwisata_lampung";
-    """)
-
-    geojson_data = cursor.fetchone()[0]  # Ambil hasil query
+        FROM "pariwisata lampung";
+    """
+    
+    cursor.execute(query)
+    data = cursor.fetchone()[0]
+    
     cursor.close()
     conn.close()
+    
+    return data
 
-    return jsonify(geojson_data)
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/get_geojson_data')
+def get_geojson_data():
+    try:
+        geojson_data = fetch_geojson_from_db()
+        return jsonify(geojson_data)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)

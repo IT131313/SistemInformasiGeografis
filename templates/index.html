@@ -6,35 +6,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Web GIS Lampung</title>
 
-    <!-- Link ke stylesheet Leaflet -->
+    <!-- External CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
-
-    <!-- Link ke stylesheet Mapbox -->
     <link href="https://api.mapbox.com/mapbox-gl-js/v2.9.0/mapbox-gl.css" rel="stylesheet" />
-
-    <!-- Link ke CSS -->
     <link rel="stylesheet" href="/static/css/style.css" />
 </head>
 
 <body>
+    <!-- Main container -->
+    <div class="main-container">
+        <!-- Sidebar -->
+        <div id="sidebar">
+            <h2>Daftar Objek Pariwisata Lampung</h2>
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="Cari objek wisata...">
+            </div>
+            <div id="categories-container">
+                <h3>Kategori</h3>
+                <div id="categories-list"></div>
+            </div>
+            <div id="object-list"></div>
+        </div>
 
-    <!-- Sidebar untuk daftar objek -->
-    <div id="sidebar">
-        <h2>Daftar Objek Pariwisata Lampung</h2>
-        <div id="object-list"></div>
+        <!-- Map container -->
+        <div id="map"></div>
     </div>
 
-    <!-- Peta -->
-    <div id="map"></div>
-
-    <!-- Link ke JavaScript Leaflet -->
+    <!-- Scripts -->
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <script src="{{ url_for('static', filename='js/map.js') }}"></script>
-
-    <!-- Add Leaflet Routing Machine -->
     <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
-
+    <script src="{{ url_for('static', filename='js/map.js') }}"></script>
 </body>
 
 </html>
