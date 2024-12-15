@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
     <link href="https://api.mapbox.com/mapbox-gl-js/v2.9.0/mapbox-gl.css" rel="stylesheet" />
     <link rel="stylesheet" href="/static/css/style.css" />
+    <script src="{{ url_for('static', filename='js/map.js') }}" defer></script>
 </head>
 
 <body>
@@ -18,15 +19,15 @@
     <div class="main-container">
         <!-- Sidebar -->
         <div id="sidebar">
-            <h2>Daftar Objek Pariwisata Lampung</h2>
+            <h2>Pariwisata Lampung</h2>
             <div class="search-box">
                 <input type="text" id="search-input" placeholder="Cari objek wisata...">
+                <div id="search-suggestions" class="suggestions-container"></div>
             </div>
             <div id="categories-container">
                 <h3>Kategori</h3>
                 <div id="categories-list"></div>
             </div>
-            <div id="object-list"></div>
         </div>
 
         <!-- Map container -->

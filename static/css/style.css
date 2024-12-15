@@ -23,24 +23,12 @@ body {
 /* Sidebar styles */
 #sidebar {
     width: 300px;
-    height: 100%;
+    height: auto;
+    min-height: 200px;
     background: #f4f4f4;
     padding: 15px;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
     overflow-y: auto;
-}
-
-.sidebar-item {
-    padding: 10px;
-    margin-bottom: 10px;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.sidebar-item:hover {
-    background-color: #f0f0f0;
 }
 
 /* Popup styles */
@@ -82,25 +70,12 @@ body {
     background-color: #218838;
 }
 
-.close-routing-button {
-    width: 100%;
-    padding: 10px 15px;
-    background-color: #d9534f;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 14px;
-    cursor: pointer;
-    margin-top: 10px;
-    transition: all 0.3s;
+/* Search box styles */
+.search-box {
+    position: relative;
+    margin-bottom: 20px;
 }
 
-.close-routing-button:hover {
-    background-color: #c9302c;
-    transform: scale(1.05);
-}
-
-/* Additional styles */
 .search-box input {
     width: 100%;
     padding: 10px;
@@ -110,103 +85,33 @@ body {
     box-sizing: border-box;
 }
 
-.categories h3 {
-    font-size: 1.2em;
-    margin-bottom: 10px;
+.suggestions-container {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 0 0 5px 5px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-.categories ul {
-    list-style: none;
-    padding: 0;
+.suggestion-item {
+    padding: 8px 12px;
+    cursor: pointer;
 }
 
-.categories li {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
+.suggestion-item:hover {
+    background-color: #f5f5f5;
 }
 
-.categories .dot {
-    height: 10px;
-    width: 10px;
-    border-radius: 50%;
-    display: inline-block;
-    margin-right: 10px;
-}
-
-.green {
-    background-color: green;
-}
-
-.orange {
-    background-color: orange;
-}
-
-.red {
-    background-color: red;
-}
-
-.blue {
-    background-color: blue;
-}
-
-h1 {
-    text-align: center;
-    margin-top: 20px;
-}
-
-/* Custom Popup Container */
-.custom-popup {
-    font-family: "Arial", sans-serif;
-    width: 300px;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    text-align: center;
-    background-color: #fff;
-    padding: 10px;
-}
-
-/* Popup Image */
-.popup-image {
-    width: 100%;
-    height: auto;
-    border-bottom: 2px solid #eee;
-}
-
-/* Popup Content */
-.popup-content h2 {
-    font-size: 18px;
-    margin: 10px 0 5px;
-    color: #000;
-}
-
-.popup-content .location {
-    font-size: 14px;
-    color: #777;
-}
-
-.popup-content .type {
-    font-size: 14px;
-    font-weight: bold;
-    color: #007bff;
-    margin-bottom: 10px;
-}
-
-/* Description Box */
-.description {
-    border: 1px solid #28a745;
-    border-radius: 5px;
-    padding: 10px;
-    margin: 10px 0;
-    background-color: #f9f9f9;
-    font-size: 13px;
-    color: #333;
-    line-height: 1.5;
-}
-
+/* Categories styles */
 #categories-container {
-    margin-bottom: 20px;
+    margin-top: 20px;
 }
 
 #categories-container h3 {
