@@ -27,37 +27,80 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
 
-// Fetch and display GeoJSON data
+// Store references to polygons for highlighting
+let polygonsLayerGroup = L.layerGroup().addTo(map);
+
+// Fetch and display GeoJSON data (points and polygons from /get_geojson_data)
 fetch('/get_geojson_data')
     .then(response => response.json())
     .then(data => {
+        // Separate points and polygons
         markersLayer = L.geoJSON(data, {
+            filter: feature => feature.properties.geometry_type === 'Point',
             onEachFeature: (feature, layer) => {
                 layer.bindPopup(createPopupContent(feature, map));
                 categories.add(feature.properties.jenis_obje);
+
+                // Add click event to show related polygon
+                layer.on('click', () => showAndHighlightPolygon(feature.properties.nama_objek));
+
+                // Hide polygon when popup closes
+                layer.on('popupclose', () => hidePolygonByObjectName(feature.properties.nama_objek));
             }
         }).addTo(map);
-        
+
+        const polygonsLayer = L.geoJSON(data, {
+            filter: feature => feature.properties.geometry_type === 'Polygon',
+            style: {
+                color: "#0078FF",
+                weight: 2,
+                fillOpacity: 0.3
+            },
+            onEachFeature: (feature, layer) => {
+                polygonsLayerGroup.addLayer(layer);
+                map.removeLayer(layer); // Initially hide all polygons
+            }
+        });
+
+        // Make markersLayer globally available
         window.markersLayer = markersLayer;
-        
-        // Initialize components after markersLayer is created
+
+        // Initialize other components
         initializeSearch(markersLayer, map);
-        initializeRouting(map, markersLayer);
+        initializeRouting(map);
         initializeCategories(categories, markersLayer, map);
     })
-    .catch(error => console.error('Error fetching GeoJSON data:', error));
+    .catch(error => console.error("Error fetching GeoJSON data:", error));
 
-// Style for GeoJSON linestring
-function style(feature) {
-    return {
-        color: '#ff7800',
-        weight: 5,
-        opacity: 0.8,
-        fillOpacity: 0
-    };
+// Function to hide all polygons
+function hideAllPolygons() {
+    polygonsLayerGroup.eachLayer(layer => map.removeLayer(layer));
 }
 
-// Load boundary GeoJSON data
+// Function to show and highlight a specific polygon
+function showAndHighlightPolygon(objectName) {
+    polygonsLayerGroup.eachLayer(layer => {
+        if (layer.feature && layer.feature.properties.nama_objek === objectName) {
+            layer.setStyle({
+                color: "#FF0000",
+                weight: 3,
+                fillOpacity: 0.5
+            });
+            map.addLayer(layer);
+            map.fitBounds(layer.getBounds());
+        }
+    });
+}
+
+// Function to hide a specific polygon by object name
+function hidePolygonByObjectName(objectName) {
+    polygonsLayerGroup.eachLayer(layer => {
+        if (layer.feature && layer.feature.properties.nama_objek === objectName) {
+            map.removeLayer(layer);
+        }
+    });
+}
+// Fetch and display GeoJSON data (multipolygons from /static/js/geojson-lampung.geojson)
 fetch('/static/js/geojson-lampung.geojson')
     .then(response => response.json())
     .then(data => {
@@ -76,3 +119,61 @@ fetch('/static/js/geojson-lampung.geojson')
         }).addTo(map);
     })
     .catch(error => console.error('Error loading GeoJSON:', error));
+// Style for GeoJSON linestring
+function style(feature) {
+    return {
+        color: '#ff7800',
+        weight: 5,
+        opacity: 0.8,
+        fillOpacity: 0,
+        fillColor: 'lightblue'
+    };
+}
+
+// ACTIVATE THIS
+// Add point by clicking on the map 
+// map.on('click', function(e) {
+//     const { lat, lng } = e.latlng;
+
+//     // Prompt the user for additional details about the point
+//     const nama_objek = prompt('Enter the name of the place:');
+//     const jenis_obje = prompt('Enter the type of the place (e.g., Museum, Park):');
+//     const alamat = prompt('Enter the address of the place:');
+//     const deskripsi = prompt('Enter a description for the place:');
+
+//     if (nama_objek && jenis_obje && alamat && deskripsi) {
+//         // Add a temporary marker to the map
+//         const marker = L.marker([lat, lng]).addTo(map);
+//         marker.bindPopup(`<b>${nama_objek}</b><br>${jenis_obje}<br>${alamat}`).openPopup();
+
+//         // Send the data to the server
+//         fetch('/add_point', {
+//             method: 'POST',
+//             headers: {
+//                 'Content-Type': 'application/json'
+//             },
+//             body: JSON.stringify({
+//                 latitude: lat,
+//                 longitude: lng,
+//                 nama_objek,
+//                 jenis_obje,
+//                 alamat,
+//                 deskripsi
+//             })
+//         })
+//             .then(response => response.json())
+//             .then(data => {
+//                 if (data.success) {
+//                     alert('Point added successfully!');
+//                 } else {
+//                     alert(`Error: ${data.error}`);
+//                 }
+//             })
+//             .catch(error => {
+//                 console.error('Error adding point:', error);
+//                 alert('An unexpected error occurred.');
+//             });
+//     } else {
+//         alert('All fields are required to add a point.');
+//     }
+// });

@@ -1,7 +1,22 @@
+// Load user location from cookies or fallback to map center
+const cookies = document.cookie.split("; ").reduce((acc, cookie) => {
+    const [key, value] = cookie.split("=");
+    acc[key] = value;
+    return acc;
+}, {});
+
+if (cookies.userLocation) {
+    window.userLocation = JSON.parse(cookies.userLocation);
+} else {
+    console.warn("User location not available. Using map center as fallback.");
+    alert("Your location is not available. The route will start from the map center.");
+    window.userLocation = null;
+}
+
 let routingControl;
 let startMarker;
 
-// Make routing functions available globally
+// Make routing functions globally accessible
 window.addRouting = addRouting;
 window.clearExistingRoute = clearExistingRoute;
 
@@ -20,6 +35,7 @@ function addRouting(destinationLatLng, map) {
     addStartMarker(map);
     createRoutingControl(destinationLatLng, map);
 }
+
 
 function clearExistingRoute(map) {
     if (routingControl) routingControl.remove();
@@ -41,7 +57,15 @@ function showAllMarkers(markersLayer) {
 }
 
 function addStartMarker(map) {
-    const startLatLng = window.userLocation || map.getCenter();
+    const startLatLng = window.userLocation
+        ? L.latLng(window.userLocation.latitude, window.userLocation.longitude)
+        : map.getCenter();
+
+    if (!window.userLocation) {
+        console.warn("User location not available, using map center as starting point.");
+        alert("Your location is not available. The route will start from the map center.");
+    }
+
     startMarker = L.marker(startLatLng, {
         icon: L.icon({
             iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/e/ec/RedDot.svg',
@@ -53,10 +77,19 @@ function addStartMarker(map) {
 }
 
 function createRoutingControl(destinationLatLng, map) {
-    const startLatLng = window.userLocation || map.getCenter();
+    const startLatLng = window.userLocation
+        ? L.latLng(window.userLocation.latitude, window.userLocation.longitude)
+        : map.getCenter();
+
+    if (!destinationLatLng) {
+        console.error("Destination LatLng is undefined.");
+        alert("Invalid destination. Please try again.");
+        return;
+    }
+
     routingControl = L.Routing.control({
         waypoints: [
-            L.latLng(startLatLng),
+            startLatLng,
             L.latLng(destinationLatLng)
         ],
         routeWhileDragging: true,
@@ -64,7 +97,7 @@ function createRoutingControl(destinationLatLng, map) {
         lineOptions: {
             styles: [{ color: '#28a745', weight: 6 }]
         },
-        createMarker: function(i, waypoint, n) {
+        createMarker: function (i, waypoint, n) {
             if (i === 0) {
                 return L.marker(waypoint.latLng, {
                     icon: L.icon({
@@ -82,10 +115,21 @@ function createRoutingControl(destinationLatLng, map) {
 
     document.querySelector('.clear-route-button').style.display = 'block';
 
-    routingControl.on('routesfound', function(e) {
+    routingControl.on('routingstart', function () {
+        console.log("Routing started...");
+        document.body.classList.add('loading'); // Add a CSS class for spinner
+    });
+
+    routingControl.on('routesfound', function (e) {
         const route = e.routes[0];
         const bounds = L.latLngBounds(route.coordinates);
         map.fitBounds(bounds);
+    });
+
+    routingControl.on('routingerror', function (error) {
+        document.body.classList.remove('loading');
+        console.error("Routing error:", error);
+        alert("Could not find a route to the destination.");
     });
 }
 
