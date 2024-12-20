@@ -9,7 +9,9 @@ if (cookies.userLocation) {
     window.userLocation = JSON.parse(cookies.userLocation);
 } else {
     console.warn("User location not available. Using map center as fallback.");
-    alert("Your location is not available. The route will start from the map center.");
+    alert(
+        "Your location is not available. The route will start from the map center."
+    );
     window.userLocation = null;
 }
 
@@ -21,10 +23,10 @@ window.addRouting = addRouting;
 window.clearExistingRoute = clearExistingRoute;
 
 function initializeRouting(map) {
-    const clearRouteButton = document.createElement('button');
-    clearRouteButton.textContent = 'Clear Route';
-    clearRouteButton.className = 'clear-route-button';
-    clearRouteButton.addEventListener('click', () => clearExistingRoute(map));
+    const clearRouteButton = document.createElement("button");
+    clearRouteButton.textContent = "Clear Route";
+    clearRouteButton.className = "clear-route-button";
+    clearRouteButton.addEventListener("click", () => clearExistingRoute(map));
     document.body.appendChild(clearRouteButton);
 }
 
@@ -36,22 +38,21 @@ function addRouting(destinationLatLng, map) {
     createRoutingControl(destinationLatLng, map);
 }
 
-
 function clearExistingRoute(map) {
     if (routingControl) routingControl.remove();
     if (startMarker) startMarker.remove();
-    document.querySelector('.clear-route-button').style.display = 'none';
+    document.querySelector(".clear-route-button").style.display = "none";
     showAllMarkers(window.markersLayer);
 }
 
 function hideAllMarkers(map, markersLayer) {
-    markersLayer.eachLayer(layer => {
+    markersLayer.eachLayer((layer) => {
         map.removeLayer(layer);
     });
 }
 
 function showAllMarkers(markersLayer) {
-    markersLayer.eachLayer(layer => {
+    markersLayer.eachLayer((layer) => {
         layer.addTo(map);
     });
 }
@@ -62,18 +63,25 @@ function addStartMarker(map) {
         : map.getCenter();
 
     if (!window.userLocation) {
-        console.warn("User location not available, using map center as starting point.");
-        alert("Your location is not available. The route will start from the map center.");
+        console.warn(
+            "User location not available, using map center as starting point."
+        );
+        alert(
+            "Your location is not available. The route will start from the map center."
+        );
     }
 
     startMarker = L.marker(startLatLng, {
         icon: L.icon({
-            iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/e/ec/RedDot.svg',
+            iconUrl:
+                "https://upload.wikimedia.org/wikipedia/commons/e/ec/RedDot.svg",
             iconSize: [25, 25],
             iconAnchor: [12, 12],
-            popupAnchor: [0, -12]
-        })
-    }).addTo(map).bindPopup("Your current location");
+            popupAnchor: [0, -12],
+        }),
+    })
+        .addTo(map)
+        .bindPopup("Your current location");
 }
 
 function createRoutingControl(destinationLatLng, map) {
@@ -88,46 +96,50 @@ function createRoutingControl(destinationLatLng, map) {
     }
 
     routingControl = L.Routing.control({
-        waypoints: [
-            startLatLng,
-            L.latLng(destinationLatLng)
-        ],
+        waypoints: [startLatLng, L.latLng(destinationLatLng)],
         routeWhileDragging: true,
         show: true,
         lineOptions: {
-            styles: [{ color: '#28a745', weight: 6 }]
+            styles: [
+                {
+                    color: "#FF0000",
+                    weight: 4,
+                    opacity: 0.7,
+                },
+            ],
         },
         createMarker: function (i, waypoint, n) {
+            const marker = L.circleMarker(waypoint.latLng, {
+                radius: 8,
+                fillColor: "#FF0000",
+                color: "#FFFFFF",
+                weight: 2,
+                opacity: 1,
+                fillOpacity: 0.8,
+            });
+
             if (i === 0) {
-                return L.marker(waypoint.latLng, {
-                    icon: L.icon({
-                        iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/e/ec/RedDot.svg',
-                        iconSize: [25, 25],
-                        iconAnchor: [12, 12],
-                        popupAnchor: [0, -12]
-                    })
-                }).bindPopup("Your current location");
-            } else {
-                return L.marker(waypoint.latLng);
+                marker.bindPopup("Your current location");
             }
-        }
+            return marker;
+        },
     }).addTo(map);
 
-    document.querySelector('.clear-route-button').style.display = 'block';
+    document.querySelector(".clear-route-button").style.display = "block";
 
-    routingControl.on('routingstart', function () {
+    routingControl.on("routingstart", function () {
         console.log("Routing started...");
-        document.body.classList.add('loading'); // Add a CSS class for spinner
+        document.body.classList.add("loading"); // Add a CSS class for spinner
     });
 
-    routingControl.on('routesfound', function (e) {
+    routingControl.on("routesfound", function (e) {
         const route = e.routes[0];
         const bounds = L.latLngBounds(route.coordinates);
         map.fitBounds(bounds);
     });
 
-    routingControl.on('routingerror', function (error) {
-        document.body.classList.remove('loading');
+    routingControl.on("routingerror", function (error) {
+        document.body.classList.remove("loading");
         console.error("Routing error:", error);
         alert("Could not find a route to the destination.");
     });

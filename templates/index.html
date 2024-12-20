@@ -1,47 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Web GIS Lampung</title>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web GIS Lampung</title>
+        <!-- External CSS -->
+        <link
+            rel="stylesheet"
+            href="https://unpkg.com/leaflet/dist/leaflet.css"
+        />
+        <link
+            rel="stylesheet"
+            href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css"
+        />
+        <link
+            href="https://api.mapbox.com/mapbox-gl-js/v2.9.0/mapbox-gl.css"
+            rel="stylesheet"
+        />
+        <link
+            href="https://fonts.googleapis.com/icon?family=Material+Icons"
+            rel="stylesheet"
+        />
+        <link rel="stylesheet" href="/static/css/style.css" />
+    </head>
 
-    <!-- External CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
-    <link href="https://api.mapbox.com/mapbox-gl-js/v2.9.0/mapbox-gl.css" rel="stylesheet" />
-    <link rel="stylesheet" href="/static/css/style.css" />
-</head>
-
-<body>
-    <!-- Main container -->
-    <div class="main-container">
-        <!-- Sidebar -->
-        <div id="sidebar">
-            <h2>Pariwisata Lampung</h2>
-            <div class="search-box">
-                <input type="text" id="search-input" placeholder="Cari objek wisata...">
-                <div id="search-suggestions" class="suggestions-container"></div>
+    <body>
+        <!-- Main container -->
+        <div class="main-container">
+            <!-- Sidebar -->
+            <div id="sidebar">
+                <h2>Pariwisata Lampung</h2>
+                <div class="search-box">
+                    <input
+                        type="text"
+                        id="search-input"
+                        placeholder="Cari objek wisata..."
+                    />
+                    <div
+                        id="search-suggestions"
+                        class="suggestions-container"
+                    ></div>
+                </div>
+                <div id="categories-container">
+                    <h3>Kategori</h3>
+                    <div id="categories-list"></div>
+                </div>
             </div>
-            <div id="categories-container">
-                <h3>Kategori</h3>
-                <div id="categories-list"></div>
+
+            <!-- Floating Popup -->
+            <div id="floating-popup" class="floating-popup">
+                <button class="close-button">&times;</button>
+                <div id="popup-content"></div>
             </div>
+
+            <!-- Map container -->
+            <div id="map"></div>
         </div>
 
-        <!-- Map container -->
-        <div id="map"></div>
-    </div>
-
-    <!-- Scripts -->
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
-    <script src="{{ url_for('static', filename='js/geolocation.js') }}"></script>
-    <script type="module" src="{{ url_for('static', filename='js/search.js') }}"></script>
-    <script type="module" src="{{ url_for('static', filename='js/routing.js') }}"></script>
-    <script type="module" src="{{ url_for('static', filename='js/popup.js') }}"></script>
-    <script type="module" src="{{ url_for('static', filename='js/category.js') }}"></script>
-    <script type="module" src="{{ url_for('static', filename='js/map.js') }}"></script>
-</body>
-
+        <!-- Scripts -->
+        <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+        <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+        <script src="{{ url_for('static', filename='js/geolocation.js') }}"></script>
+        <script
+            type="module"
+            src="{{ url_for('static', filename='js/search.js') }}"
+        ></script>
+        <script
+            type="module"
+            src="{{ url_for('static', filename='js/routing.js') }}"
+        ></script>
+        <script
+            type="module"
+            src="{{ url_for('static', filename='js/popup.js') }}"
+        ></script>
+        <script
+            type="module"
+            src="{{ url_for('static', filename='js/category.js') }}"
+        ></script>
+        <script
+            type="module"
+            src="{{ url_for('static', filename='js/map.js') }}"
+        ></script>
+    </body>
 </html>
