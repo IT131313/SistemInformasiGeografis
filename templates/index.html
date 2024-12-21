@@ -27,6 +27,42 @@
                 <h3>Kategori</h3>
                 <div id="categories-list"></div>
             </div>
+
+            <!-- Tambah Data Form -->
+            <div id="add-data-form">
+                <h3>Tambah Data</h3>
+                <form id="addLocationForm">
+                    <label for="name">Nama:</label>
+                    <input type="text" id="name" name="name" required />
+
+                    <label for="category">Kategori:</label>
+                    <select id="category" name="category" required>
+                        <option value="Kantor Pemerintahan">Kantor Pemerintahan</option>
+                        <option value="Rumah Makan">Rumah Makan</option>
+                        <option value="Vihara">Vihara</option>
+                        <option value="Monumen">Monumen</option>
+                        <option value="Rumah Adat">Rumah Adat</option>
+                        <option value="Kawasan Wisata">Kawasan Wisata</option>
+                        <option value="Air Terjun">Air Terjun</option>
+                        <option value="Kawasan Seni">Kawasan Seni</option>
+                        <option value="Museum">Museum</option>
+                        <option value="Taman">Taman</option>
+                        <option value="Danau">Danau</option>
+                        <option value="Taman Nasional">Taman Nasional</option>
+                    </select>
+
+                    <label for="description">Deskripsi:</label>
+                    <textarea id="description" name="description" required></textarea>
+
+                    <label for="latitude">Latitude:</label>
+                    <input type="text" id="latitude" name="latitude" required />
+
+                    <label for="longitude">Longitude:</label>
+                    <input type="text" id="longitude" name="longitude" required />
+
+                    <button type="submit">Simpan</button>
+                </form>
+            </div>
         </div>
 
         <!-- Map container -->
@@ -42,6 +78,39 @@
     <script type="module" src="{{ url_for('static', filename='js/popup.js') }}"></script>
     <script type="module" src="{{ url_for('static', filename='js/category.js') }}"></script>
     <script type="module" src="{{ url_for('static', filename='js/map.js') }}"></script>
+    <script>
+        // Logika untuk mengirim data dari form
+        document.getElementById('addLocationForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const data = {
+                name: document.getElementById('name').value,
+                category: document.getElementById('category').value,
+                description: document.getElementById('description').value,
+                latitude: document.getElementById('latitude').value,
+                longitude: document.getElementById('longitude').value,
+            };
+
+            try {
+                const response = await fetch('/add_location', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data),
+                });
+
+                const result = await response.json();
+                alert(result.message);
+
+                if (result.status === 'success') {
+                    // Reload data ke map setelah berhasil menyimpan
+                    location.reload();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Gagal menambahkan data.');
+            }
+        });
+    </script>
 </body>
 
 </html>
