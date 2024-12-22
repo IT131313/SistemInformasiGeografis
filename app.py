@@ -106,7 +106,11 @@ def get_geojson_data():
 @app.route('/add_point', methods=['POST'])
 def add_point():
     try:
-        # Get data from the request
+        access_token = session.get('access_token')
+        
+        if not access_token:
+            return jsonify({'success': False, 'error': 'Access token is required.'}), 401
+
         data = request.get_json()
         latitude = data.get('latitude')
         longitude = data.get('longitude')
@@ -136,16 +140,19 @@ def add_point():
         cursor.close()
         conn.close()
 
-        # Return success response
         return jsonify({'success': True, 'message': 'Point added successfully.'}), 200
     except Exception as e:
-        # Log the error and return an error response
         print(f"Error adding point: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/add_polygon', methods=['POST'])
 def add_polygon():
     try:
+        access_token = session.get('access_token')
+        
+        if not access_token:
+            return jsonify({'success': False, 'error': 'Access token is required.'}), 401
+        
         data = request.json
         polygon = data.get('polygon')
         centroid = data.get('centroid')
@@ -186,6 +193,41 @@ def add_polygon():
         conn.close()
 
         return jsonify({"success": True, "objectid": objectid, "polygon": polygon_wkt, "centroid": centroid_wkt}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/delete_data', methods=['POST'])
+def delete_data():
+    try:
+        access_token = session.get('access_token')
+        
+        if not access_token:
+            return jsonify({'success': False, 'error': 'Access token is required.'}), 401
+        
+        data = request.json
+        nama_objek = data.get('nama_objek')
+
+        if not nama_objek:
+            return jsonify({"error": "Missing 'nama_objek' in request"}), 400
+
+        # Connect to the database
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Delete the entry from the database
+        query = "DELETE FROM pariwisata_lampung WHERE nama_objek = %s RETURNING objectid;"
+        cursor.execute(query, (nama_objek,))
+        deleted_row = cursor.fetchone()
+
+        if not deleted_row:
+            return jsonify({"success": f"Object have been deleted"}), 404
+
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        return jsonify({"success": True, "message": f"Object '{nama_objek}' deleted successfully"}), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -402,37 +444,6 @@ def logout():
     # Hapus semua data session
     session.clear()
     return redirect(url_for('login'))
-
-@app.route('/add_location', methods=['POST'])
-def add_location():
-    data = request.get_json()
-    nama_objek = data.get('nama_objek')
-    jenis_objek = data.get('jenis_objek')
-    alamat = data.get('alamat')
-    deskripsi = data.get('deskripsi')
-    latitude = data.get('latitude')
-    longitude = data.get('longitude')
-
-    # Simpan ke database
-    if 'access_token' not in session:
-        return jsonify({'error': 'No Access Token'})
-    else:
-        try:
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            cursor.execute(
-            '''
-                INSERT INTO locations (nama_objek, jenis_objek, alamat, deskripsi, latitude, longitude)
-                VALUES (%s, %s, %s, %s, %s, %s)
-            ''',
-                (nama_objek, jenis_objek, alamat, deskripsi, latitude, longitude)
-            )
-            conn.commit()
-            cursor.close()
-            conn.close()
-            return jsonify({'status': 'success', 'message': 'Data berhasil ditambahkan!'}), 200
-        except Exception as e:
-            return jsonify({'status': 'error', 'message': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)

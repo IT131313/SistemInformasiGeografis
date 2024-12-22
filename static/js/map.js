@@ -237,6 +237,111 @@ function style(feature) {
     };
 }
 
+export function getFeatureByName(objectName) {
+    let foundFeature = null;
+
+    markersLayer.eachLayer((layer) => {
+        if (
+            layer.feature &&
+            layer.feature.properties.nama_objek === objectName
+        ) {
+            foundFeature = layer.feature;
+        }
+    });
+
+    polygonsLayerGroup.eachLayer((layer) => {
+        if (
+            layer.feature &&
+            layer.feature.properties.nama_objek === objectName
+        ) {
+            foundFeature = layer.feature;
+        }
+    });
+
+    return foundFeature;
+}
+
+export function refreshMap(){
+    // Optionally, clear the map completely before reloading the data
+    if (window.markersLayer) {
+        window.markersLayer.clearLayers(); // Clear all markers
+    }
+
+    // Optionally, clear polygons layer if you have a polygonsLayerGroup
+    if (polygonsLayerGroup) {
+        polygonsLayerGroup.clearLayers(); // Clear all polygons
+    }
+
+    // Fetch new data and refresh the map
+    fetch("/get_geojson_data")
+    .then((response) => response.json())
+    .then((data) => {
+        // Separate points and polygons
+        markersLayer = L.geoJSON(data, {
+            filter: (feature) => feature.properties.geometry_type === "Point",
+            pointToLayer: (feature, latlng) => {
+                const category = feature.properties.jenis_obje;
+                const iconName =
+                    markerIcons[category] || markerIcons["Default"];
+
+                return L.marker(latlng, {
+                    icon: L.divIcon({
+                        className: "custom-div-icon",
+                        html: `
+                            <div class="marker-pin" style="background-color: #FF4646;">
+                                <span class="material-icons">${iconName}</span>
+                            </div>
+                        `,
+                        iconSize: [30, 42],
+                        iconAnchor: [15, 42],
+                    }),
+                });
+            },
+            onEachFeature: (feature, layer) => {
+                // Remove the bindPopup and instead add click handler
+                layer.on("click", () => {
+                    showFloatingPopup(
+                        createPopupContent(feature),
+                        feature.properties.nama_objek
+                    );
+                    showAndHighlightPolygon(feature.properties.nama_objek);
+                });
+                categories.add(feature.properties.jenis_obje);
+            },
+        }).addTo(map);
+
+        const polygonsLayer = L.geoJSON(data, {
+            filter: (feature) => feature.properties.geometry_type === "Polygon",
+            style: {
+                color: "#FF0000",
+                weight: 2,
+                fillOpacity: 0.3,
+                fillColor: "#FF0000",
+            },
+            onEachFeature: (feature, layer) => {
+                polygonsLayerGroup.addLayer(layer);
+                map.removeLayer(layer); // Initially hide all polygons
+            },
+        });
+
+        // Make markersLayer globally available
+        window.markersLayer = markersLayer;
+
+        // Initialize other components
+        initializeSearch(markersLayer, map);
+        initializeRouting(map);
+        initializeCategories(categories, markersLayer, map);
+    })
+    .catch((error) => console.error("Error fetching GeoJSON data:", error));
+}
+
+
+
+
+
+
+
+
 // ADD POINT FUNCTION
 let isAddingPoint = false; // Flag to track if we're in add_point mode
 let tempMarkerLayer = L.layerGroup().addTo(map); // Temporary layer group for markers
@@ -305,7 +410,8 @@ map.on('click', function (e) {
             .then(data => {
                 if (data.success) {
                     alert('Point added successfully!');
-                    deactivateAddPoint(); // Automatically deactivate after successful addition
+                    deactivateAddPoint();
+                    refreshMap() // Automatically deactivate after successful addition
                 } else {
                     alert(`Error: ${data.error}`);
                 }
@@ -471,3 +577,5 @@ document.addEventListener('keydown', (e) => {
         deactivateAddArea();
     }
 });
+
+
