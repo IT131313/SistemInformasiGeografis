@@ -1,31 +1,45 @@
 function initializeCategories(categories, markersLayer, map) {
+    const categoriesContainer = document.getElementById("categories-container");
+    const categoriesTitle = categoriesContainer.querySelector("h3");
+    const categoriesList = document.getElementById("categories-list");
+
+    // Add click handler for collapse/expand
+    categoriesTitle.addEventListener("click", () => {
+        categoriesTitle.classList.toggle("collapsed");
+        categoriesList.classList.toggle("collapsed");
+    });
+
     updateCategoriesList(categories, markersLayer, map);
 }
 
 function updateCategoriesList(categories, markersLayer, map) {
-    const categoriesContainer = document.getElementById('categories-list');
-    const searchInput = document.getElementById('search-input');
-    categoriesContainer.innerHTML = '';
-    
-    const allCategory = document.createElement('div');
-    allCategory.classList.add('category-item');
-    allCategory.innerHTML = 'Tampilkan Semua';
-    allCategory.addEventListener('click', () => filterMarkers('all', markersLayer, map));
+    const categoriesContainer = document.getElementById("categories-list");
+    const searchInput = document.getElementById("search-input");
+    categoriesContainer.innerHTML = "";
+
+    const allCategory = document.createElement("div");
+    allCategory.classList.add("category-item");
+    allCategory.innerHTML = "Tampilkan Semua";
+    allCategory.addEventListener("click", () =>
+        filterMarkers("all", markersLayer, map)
+    );
     categoriesContainer.appendChild(allCategory);
 
-    categories.forEach(category => {
-        const item = document.createElement('div');
-        item.classList.add('category-item');
+    categories.forEach((category) => {
+        const item = document.createElement("div");
+        item.classList.add("category-item");
         item.innerHTML = category;
-        item.addEventListener('click', () => filterMarkers(category, markersLayer, map));
+        item.addEventListener("click", () =>
+            filterMarkers(category, markersLayer, map)
+        );
         categoriesContainer.appendChild(item);
     });
 }
 
 function filterMarkers(selectedCategory, markersLayer, map) {
-    document.getElementById('search-input').value = '';
-    markersLayer.eachLayer(layer => {
-        if (selectedCategory === 'all') {
+    document.getElementById("search-input").value = "";
+    markersLayer.eachLayer((layer) => {
+        if (selectedCategory === "all") {
             layer.addTo(map);
         } else {
             const layerCategory = layer.feature.properties.jenis_obje;
