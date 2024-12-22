@@ -115,6 +115,53 @@ def add_point():
         print(f"Error adding point: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
+@app.route('/add_polygon', methods=['POST'])
+def add_polygon():
+    try:
+        data = request.json
+        polygon = data.get('polygon')
+        centroid = data.get('centroid')
+        nama_objek = data.get('nama_objek')
+        jenis_obje = data.get('jenis_obje')
+        alamat = data.get('alamat')
+        deskripsi = data.get('deskripsi')
+
+        if not polygon or not isinstance(polygon, list) or len(polygon[0]) < 4:
+            return jsonify({"error": "A polygon must have at least 4 points, including the closing point."}), 400
+
+        # Convert the polygon into WKT format
+        polygon_wkt = f"POLYGON(({','.join(f'{lng} {lat}' for lng, lat in polygon[0])}))"
+
+        # Convert the centroid into WKT POINT format
+        centroid_wkt = f"POINT({centroid[0]} {centroid[1]})"
+
+        # Connect to the database
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Insert the polygon and its centroid into the database
+        query = """
+            INSERT INTO pariwisata_lampung (objectid, polygon, geom, nama_objek, jenis_obje, alamat, deskripsi)
+            VALUES (
+                DEFAULT,
+                ST_GeomFromText(%s, 4326),
+                ST_GeomFromText(%s, 4326),
+                %s, %s, %s, %s
+            ) RETURNING objectid;
+        """
+        cursor.execute(query, (polygon_wkt, centroid_wkt, nama_objek, jenis_obje, alamat, deskripsi))
+        conn.commit()
+
+        objectid = cursor.fetchone()[0]
+
+        cursor.close()
+        conn.close()
+
+        return jsonify({"success": True, "objectid": objectid, "polygon": polygon_wkt, "centroid": centroid_wkt}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 # Route to store user location
 @app.route('/store-location', methods=['POST'])
 def store_location():

@@ -1,16 +1,41 @@
-// Load user location from cookies or fallback to map center
-const cookies = document.cookie.split("; ").reduce((acc, cookie) => {
-    const [key, value] = cookie.split("=");
-    acc[key] = value;
-    return acc;
-}, {});
+// Load user location dynamically or fallback to map center
+function getUserLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const userLocation = {
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude
+                };
 
-if (cookies.userLocation) {
-    window.userLocation = JSON.parse(cookies.userLocation);
-} else {
-    console.warn("User location not available. Using map center as fallback.");
-    alert("Your location is not available. The route will start from the map center.");
-    window.userLocation = null;
+                // Debug log
+                console.log("User location captured:", userLocation);
+
+                // Update global userLocation dynamically
+                window.userLocation = userLocation;
+            },
+            (error) => {
+                console.error("Geolocation error:", error);
+                switch (error.code) {
+                    case error.PERMISSION_DENIED:
+                        alert("Location access denied. The route will start from the map center.");
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        alert("Location unavailable. The route will start from the map center.");
+                        break;
+                    case error.TIMEOUT:
+                        alert("Location request timed out. The route will start from the map center.");
+                        break;
+                    default:
+                        alert("An unknown error occurred.");
+                }
+                window.userLocation = null; // Fallback to null
+            }
+        );
+    } else {
+        alert("Geolocation is not supported by your browser.");
+        window.userLocation = null; // Fallback to null
+    }
 }
 
 let routingControl;
@@ -19,28 +44,41 @@ let startMarker;
 // Make routing functions globally accessible
 window.addRouting = addRouting;
 window.clearExistingRoute = clearExistingRoute;
+window.getUserLocation = getUserLocation; // Export for external usage
 
 function initializeRouting(map) {
     const clearRouteButton = document.createElement('button');
     clearRouteButton.textContent = 'Clear Route';
     clearRouteButton.className = 'clear-route-button';
+    clearRouteButton.style.display = 'none'; // Hide initially
     clearRouteButton.addEventListener('click', () => clearExistingRoute(map));
     document.body.appendChild(clearRouteButton);
+
+    // Prompt user for location when the map initializes
+    getUserLocation();
 }
 
 function addRouting(destinationLatLng, map) {
     const markersLayer = window.markersLayer;
+
+    // Ensure we have the user's location before proceeding
+    if (!window.userLocation) {
+        alert("User location not available. Attempting to fetch again...");
+        getUserLocation();
+        return;
+    }
+
     clearExistingRoute(map);
     hideAllMarkers(map, markersLayer);
     addStartMarker(map);
     createRoutingControl(destinationLatLng, map);
 }
 
-
 function clearExistingRoute(map) {
     if (routingControl) routingControl.remove();
     if (startMarker) startMarker.remove();
-    document.querySelector('.clear-route-button').style.display = 'none';
+    const clearButton = document.querySelector('.clear-route-button');
+    if (clearButton) clearButton.style.display = 'none';
     showAllMarkers(window.markersLayer);
 }
 
@@ -113,12 +151,8 @@ function createRoutingControl(destinationLatLng, map) {
         }
     }).addTo(map);
 
-    document.querySelector('.clear-route-button').style.display = 'block';
-
-    routingControl.on('routingstart', function () {
-        console.log("Routing started...");
-        document.body.classList.add('loading'); // Add a CSS class for spinner
-    });
+    const clearButton = document.querySelector('.clear-route-button');
+    if (clearButton) clearButton.style.display = 'block';
 
     routingControl.on('routesfound', function (e) {
         const route = e.routes[0];
@@ -127,7 +161,6 @@ function createRoutingControl(destinationLatLng, map) {
     });
 
     routingControl.on('routingerror', function (error) {
-        document.body.classList.remove('loading');
         console.error("Routing error:", error);
         alert("Could not find a route to the destination.");
     });

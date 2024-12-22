@@ -1,8 +1,8 @@
 # Konfigurasi database PostgreSQL
 DATABASE_CONFIG = {
-    'dbname': 'nama_database',   # Nama database
-    'user': 'nama_user',         # Nama pengguna database
-    'password': 'pw_user_database',  # Kata sandi pengguna
+    'dbname': 'pariwisata_db',   # Nama database
+    'user': 'postgres',         # Nama pengguna database
+    'password': 'BangKumis69',  # Kata sandi pengguna
     'host': 'localhost',         # Host database
-    'port': '5432',              # Port database
+    'port': '6699',              # Port database
 }

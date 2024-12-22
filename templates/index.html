@@ -19,13 +19,24 @@
         <!-- Sidebar -->
         <div id="sidebar">
             <h2>Pariwisata Lampung</h2>
+
+            <!-- Search Box -->
             <div class="search-box">
                 <input type="text" id="search-input" placeholder="Cari objek wisata...">
                 <div id="search-suggestions" class="suggestions-container"></div>
             </div>
+
+            <!-- Categories -->
             <div id="categories-container">
                 <h3>Kategori</h3>
                 <div id="categories-list"></div>
+            </div>
+
+            <!-- Add Area Button -->
+            <div id="add-data-container" class="sidebar-section">
+                <h3>Tambahkan Data</h3>
+                <button id="addPointButton" class="sidebar-button">Tambah Titik</button>
+                <button id="addAreaButton" class="sidebar-button">Tambah Area</button>
             </div>
         </div>
 
@@ -42,6 +53,56 @@
     <script type="module" src="{{ url_for('static', filename='js/popup.js') }}"></script>
     <script type="module" src="{{ url_for('static', filename='js/category.js') }}"></script>
     <script type="module" src="{{ url_for('static', filename='js/map.js') }}"></script>
+
+    <script type="module">
+        import {
+            activateAddPoint,
+            deactivateAddPoint,
+            activateAddArea,
+            deactivateAddArea
+        } from "{{ url_for('static', filename='js/map.js') }}";
+
+        // Ensure `isAddingArea` is accessible here
+        let isAddingArea = false;
+        let isAddingPoint = false;
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const addPointButton = document.getElementById("addPointButton");
+
+            // Add a click event listener to toggle behavior
+            addPointButton.addEventListener("click", () => {
+                if (isAddingPoint) {
+                    deactivateAddPoint(); // Deactivate if active
+                    addPointButton.textContent = "Activate Add Point"; // Update button label
+                } else {
+                    activateAddPoint(); // Activate if inactive
+                    addPointButton.textContent = "Deactivate Add Point"; // Update button label
+                }
+
+                // Toggle the state of isAddingArea
+                isAddingPoint = !isAddingPoint;
+            });
+        })
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const addAreaButton = document.getElementById("addAreaButton");
+
+            // Add a click event listener to toggle behavior
+            addAreaButton.addEventListener("click", () => {
+                if (isAddingArea) {
+                    deactivateAddArea(); // Deactivate if active
+                    addAreaButton.textContent = "Activate Add Area"; // Update button label
+                } else {
+                    activateAddArea(); // Activate if inactive
+                    addAreaButton.textContent = "Deactivate Add Area"; // Update button label
+                }
+
+                // Toggle the state of isAddingArea
+                isAddingArea = !isAddingArea;
+            });
+        });
+    </script>
+
 </body>
 
 </html>
