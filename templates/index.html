@@ -2,14 +2,15 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Web GIS Lampung</title>
 
     <!-- External CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
     <link href="https://api.mapbox.com/mapbox-gl-js/v2.9.0/mapbox-gl.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
     <link rel="stylesheet" href="/static/css/style.css" />
 </head>
 
@@ -22,7 +23,7 @@
 
             <!-- Search Box -->
             <div class="search-box">
-                <input type="text" id="search-input" placeholder="Cari objek wisata...">
+                <input type="text" id="search-input" placeholder="Cari objek wisata..." />
                 <div id="search-suggestions" class="suggestions-container"></div>
             </div>
 
@@ -38,6 +39,12 @@
                 <button id="addPointButton" class="sidebar-button">Tambah Titik</button>
                 <button id="addAreaButton" class="sidebar-button">Tambah Area</button>
             </div>
+        </div>
+
+        <!-- Floating Popup -->
+        <div id="floating-popup" class="floating-popup">
+            <button class="close-button">&times;</button>
+            <div id="popup-content"></div>
         </div>
 
         <!-- Map container -->
