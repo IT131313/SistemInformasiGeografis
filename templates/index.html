@@ -1,229 +1,186 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>SIPALUNG</title>
-        <!-- Add favicon -->
-        <link
-            rel="icon"
-            type="image/jpeg"
-            href="{{ url_for('static', filename='images/SIPALUNG.jpg') }}"
-        />
 
-        <!-- External CSS -->
-        <link
-            rel="stylesheet"
-            href="https://unpkg.com/leaflet/dist/leaflet.css"
-        />
-        <link
-            rel="stylesheet"
-            href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css"
-        />
-        <link
-            href="https://api.mapbox.com/mapbox-gl-js/v2.9.0/mapbox-gl.css"
-            rel="stylesheet"
-        />
-        <link
-            href="https://fonts.googleapis.com/icon?family=Material+Icons"
-            rel="stylesheet"
-        />
-        <link rel="stylesheet" href="/static/css/style.css" />
-    </head>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SIPALUNG</title>
+    <!-- Add favicon -->
+    <link rel="icon" type="image/jpeg" href="{{ url_for('static', filename='images/SIPALUNG.jpg') }}" />
 
-    <body>
-        <!-- Add this right after the opening body tag -->
-        <div id="modal-overlay" class="modal-overlay"></div>
+    <!-- External CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.9.0/mapbox-gl.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link rel="stylesheet" href="/static/css/style.css" />
+</head>
 
-        <!-- Main container -->
-        <div class="main-container">
-            <!-- Sidebar -->
-            <div id="sidebar">
-                <h2>Sistem Informasi Pariwisata Lampung</h2>
+<body>
+    <!-- Add this right after the opening body tag -->
+    <div id="modal-overlay" class="modal-overlay"></div>
 
-                <!-- Search Box -->
-                <div class="search-box">
-                    <input
-                        type="text"
-                        id="search-input"
-                        placeholder="Cari objek wisata..."
-                    />
-                    <div
-                        id="search-suggestions"
-                        class="suggestions-container"
-                    ></div>
-                </div>
+    <!-- Main container -->
+    <div class="main-container">
+        <!-- Sidebar -->
+        <div id="sidebar">
+            <h2>Sistem Informasi Pariwisata Lampung</h2>
 
-                <!-- Categories -->
-                <div id="categories-container">
-                    <h3>Kategori</h3>
-                    <div id="categories-list"></div>
-                </div>
-
-                <!-- Add Area Button -->
-                <div id="add-data-container" class="sidebar-section">
-                    <h3>Tambahkan Data</h3>
-                    <div class="add-data-buttons">
-                        <button id="addPointButton" class="add-data-button">
-                            <span class="material-icons">add_location</span>
-                            Tambah Titik
-                        </button>
-                        <button id="addAreaButton" class="add-data-button">
-                            <span class="material-icons">add_chart</span>
-                            Tambah Area
-                        </button>
-                        <button id="deleteButton" class="add-data-button">
-                            <span class="material-icons">delete</span>
-                            Hapus Data
-                        </button>
-                    </div>
-                    <div class="login-button-container">
-                        <button id="loginButton" class="add-data-button">
-                            <span class="material-icons">login</span>
-                            Login Admin
-                        </button>
-                    </div>
-                </div>
+            <!-- Search Box -->
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="Cari objek wisata..." />
+                <div id="search-suggestions" class="suggestions-container"></div>
             </div>
 
-            <!-- Floating Popup -->
-            <div id="floating-popup" class="floating-popup">
-                <button class="close-button">&times;</button>
-                <div id="popup-content"></div>
+            <!-- Categories -->
+            <div id="categories-container">
+                <h3>Kategori</h3>
+                <div id="categories-list"></div>
             </div>
 
-            <!-- Map container -->
-            <div id="map"></div>
-        </div>
-
-        <!-- Input Form Popups -->
-        <div id="point-form-popup" class="form-popup">
-            <div class="form-container">
-                <h3>Tambah Titik Baru</h3>
-                <form id="point-form">
-                    <div class="form-group">
-                        <label for="point-name">Nama Objek:</label>
-                        <input type="text" id="point-name" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="point-type">Jenis Objek:</label>
-                        <input type="text" id="point-type" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="point-address">Alamat:</label>
-                        <input type="text" id="point-address" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="point-description">Deskripsi:</label>
-                        <textarea id="point-description" required></textarea>
-                    </div>
-                    <div class="form-buttons">
-                        <button type="submit" class="submit-btn">Simpan</button>
-                        <button
-                            type="button"
-                            class="cancel-btn"
-                            onclick="closePointForm()"
-                        >
-                            Batal
-                        </button>
-                    </div>
-                </form>
+            <!-- Add Area Button -->
+            <div id="add-data-container" class="sidebar-section">
+                <h3>Tambahkan Data</h3>
+                <div class="add-data-buttons">
+                    <button id="addPointButton" class="add-data-button">
+                        <span class="material-icons">add_location</span>
+                        Tambah Titik
+                    </button>
+                    <button id="addAreaButton" class="add-data-button">
+                        <span class="material-icons">add_chart</span>
+                        Tambah Area
+                    </button>
+                </div>
+                <div class="login-button-container">
+                    <button id="loginButton" class="add-data-button">
+                        <span class="material-icons">login</span>
+                        Login Admin
+                    </button>
+                </div>
             </div>
         </div>
 
-        <div id="area-form-popup" class="form-popup">
-            <div class="form-container">
-                <h3>Tambah Area Baru</h3>
-                <form id="area-form">
-                    <div class="form-group">
-                        <label for="area-name">Nama Area:</label>
-                        <input type="text" id="area-name" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="area-type">Jenis Area:</label>
-                        <input type="text" id="area-type" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="area-address">Alamat:</label>
-                        <input type="text" id="area-address" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="area-description">Deskripsi:</label>
-                        <textarea id="area-description" required></textarea>
-                    </div>
-                    <div class="form-buttons">
-                        <button type="submit" class="submit-btn">Simpan</button>
-                        <button
-                            type="button"
-                            class="cancel-btn"
-                            onclick="closeAreaForm()"
-                        >
-                            Batal
-                        </button>
-                    </div>
-                </form>
-            </div>
+        <!-- Floating Popup -->
+        <div id="floating-popup" class="floating-popup">
+            <button class="close-button">&times;</button>
+            <div id="popup-content"></div>
         </div>
 
-        <!-- Scripts -->
-        <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-        <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
-        <script src="{{ url_for('static', filename='js/geolocation.js') }}"></script>
-        <script
-            type="module"
-            src="{{ url_for('static', filename='js/search.js') }}"
-        ></script>
-        <script
-            type="module"
-            src="{{ url_for('static', filename='js/routing.js') }}"
-        ></script>
-        <script
-            type="module"
-            src="{{ url_for('static', filename='js/popup.js') }}"
-        ></script>
-        <script
-            type="module"
-            src="{{ url_for('static', filename='js/category.js') }}"
-        ></script>
-        <script
-            type="module"
-            src="{{ url_for('static', filename='js/map.js') }}"
-        ></script>
+        <!-- Map container -->
+        <div id="map"></div>
+    </div>
 
-        <script type="module">
-            import {
-                activateAddPoint,
-                deactivateAddPoint,
-                activateAddArea,
-                deactivateAddArea,
-            } from "{{ url_for('static', filename='js/addData.js') }}";
+    <!-- Input Form Popups -->
+    <div id="point-form-popup" class="form-popup">
+        <div class="form-container">
+            <h3>Tambah Titik Baru</h3>
+            <form id="point-form">
+                <div class="form-group">
+                    <label for="point-name">Nama Objek:</label>
+                    <input type="text" id="point-name" required />
+                </div>
+                <div class="form-group">
+                    <label for="point-type">Jenis Objek:</label>
+                    <input type="text" id="point-type" required />
+                </div>
+                <div class="form-group">
+                    <label for="point-address">Alamat:</label>
+                    <input type="text" id="point-address" required />
+                </div>
+                <div class="form-group">
+                    <label for="point-description">Deskripsi:</label>
+                    <textarea id="point-description" required></textarea>
+                </div>
+                <div class="form-buttons">
+                    <button type="submit" class="submit-btn">Simpan</button>
+                    <button type="button" class="cancel-btn" onclick="closePointForm()">
+                        Batal
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-            // Ensure the buttons are properly initialized
-            document.addEventListener("DOMContentLoaded", () => {
-                const addPointButton =
-                    document.getElementById("addPointButton");
-                const addAreaButton = document.getElementById("addAreaButton");
-                let isAddingPoint = false;
-                let isAddingArea = false;
+    <div id="area-form-popup" class="form-popup">
+        <div class="form-container">
+            <h3>Tambah Area Baru</h3>
+            <form id="area-form">
+                <div class="form-group">
+                    <label for="area-name">Nama Area:</label>
+                    <input type="text" id="area-name" required />
+                </div>
+                <div class="form-group">
+                    <label for="area-type">Jenis Area:</label>
+                    <input type="text" id="area-type" required />
+                </div>
+                <div class="form-group">
+                    <label for="area-address">Alamat:</label>
+                    <input type="text" id="area-address" required />
+                </div>
+                <div class="form-group">
+                    <label for="area-description">Deskripsi:</label>
+                    <textarea id="area-description" required></textarea>
+                </div>
+                <div class="form-buttons">
+                    <button type="submit" class="submit-btn">Simpan</button>
+                    <button type="button" class="cancel-btn" onclick="closeAreaForm()">
+                        Batal
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-                addPointButton.addEventListener("click", () => {
-                    if (isAddingPoint) {
-                        deactivateAddPoint();
-                    } else {
-                        activateAddPoint();
-                    }
-                    isAddingPoint = !isAddingPoint;
-                });
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+    <script src="{{ url_for('static', filename='js/geolocation.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='js/search.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='js/routing.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='js/popup.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='js/category.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='js/map.js') }}"></script>
 
-                addAreaButton.addEventListener("click", () => {
-                    if (isAddingArea) {
-                        deactivateAddArea();
-                    } else {
-                        activateAddArea();
-                    }
-                    isAddingArea = !isAddingArea;
-                });
+    <script type="module">
+        import {
+            activateAddPoint,
+            deactivateAddPoint,
+            activateAddArea,
+            deactivateAddArea,
+        } from "{{ url_for('static', filename='js/addData.js') }}";
+
+        // Ensure the buttons are properly initialized
+        document.addEventListener("DOMContentLoaded", () => {
+            const addPointButton = document.getElementById("addPointButton");
+            const addAreaButton = document.getElementById("addAreaButton");
+            const loginButton = document.getElementById("loginButton")
+
+            let isAddingPoint = false;
+            let isAddingArea = false;
+
+            addPointButton.addEventListener("click", () => {
+                if (isAddingPoint) {
+                    deactivateAddPoint();
+                } else {
+                    activateAddPoint();
+                }
+                isAddingPoint = !isAddingPoint;
             });
-        </script>
-    </body>
+
+            addAreaButton.addEventListener("click", () => {
+                if (isAddingArea) {
+                    deactivateAddArea();
+                } else {
+                    activateAddArea();
+                }
+                isAddingArea = !isAddingArea;
+            });
+
+            loginButton.addEventListener("click", () => {
+                location.href = 'login'
+            })
+        });
+    </script>
+</body>
+
 </html>
