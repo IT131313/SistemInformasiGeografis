@@ -1,9 +1,11 @@
 Flask
 Flask-SQLAlchemy
 Flask-Login
-flask-cors
-flask_mail
-flask_jwt_extended
-flask_bcrypt
 psycopg2
+shapely
+geopy
+Flask-Cors
+Flask-Mail
+Flask-JWT-Extended
+Flask-Bcrypt
 Werkzeug
