@@ -168,7 +168,7 @@ function hideAllPolygons() {
 }
 
 // Function to show and highlight a specific polygon
-function showAndHighlightPolygon(objectName) {
+export function showAndHighlightPolygon(objectName) {
     // First hide all polygons
     polygonsLayerGroup.eachLayer((layer) => {
         map.removeLayer(layer);
